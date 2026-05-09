@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker | Cyrus Tech</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+      font-family: Arial, sans-serif;
+      color: white;
+      padding: 15px;
+      min-height: 100vh;
+    }
+.container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+.header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 15px;
+      backdrop-filter: blur(15px);
+    }
+    h1 { font-size: 24px; margin-bottom: 5px; }
+.brand { font-size: 11px; opacity: 0.8; }
+.balance-card {
+      background: linear-gradient(135deg, #00ff88 0%, #00d9ff 100%);
+      color: #1c1e21;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 25px rgba(0,255,136,0.3);
+    }
+.balance-label { font-size: 12px; opacity: 0.7; margin-bottom: 5px; font-weight: bold; }
+.balance-amount { font-size: 36px; font-weight: bold; margin-bottom: 15px; }
+.summary {
+      display: flex;
+      justify-content: space-around;
+      gap: 10px;
+    }
+.summary-item { text-align: center; flex: 1; }
+.summary-label { font-size: 11px; opacity: 0.7; margin-bottom: 3px; }
+.summary-amount { font-size: 18px; font-weight: bold; }
+.summary-amount.income { color: #00ff88; }
+.summary-amount.expense { color: #ff4757; }
+.form-card {
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 15px;
+      backdrop-filter: blur(15px);
+      margin-bottom: 20px;
+    }
+.form-group { margin-bottom: 15px; }
+.form-label { font-size: 12px; opacity: 0.8; margin-bottom: 6px; display: block; font-weight: bold; }
+.form-input,.form-select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid rgba(255,255,255,0.2);
+      background: rgba(0,0,0,0.3);
+      color: white;
+      font-size: 14px;
+      outline: none;
+    }
+.form-input:focus,.form-select:focus { border-color: #00ff88; }
+.form-row { display: flex; gap: 10px; }
+.form-row.form-group { flex: 1; }
+.btn-group { display: flex; gap: 10px; }
+.btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+.btn:active { transform: scale(0.98); }
+.btn-income { background: #00ff88; color: #1c1e21; }
+.btn-expense { background: #ff4757; color: white; }
+.btn-delete { background: rgba(255,255,255,0.2); color: white; padding: 6px 12px; font-size: 12px; }
+.transactions {
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 15px;
+      backdrop-filter: blur(15px);
+    }
+.section-title { font-size: 16px; font-weight: bold; margin-bottom: 15px; }
+.transaction-list { max-height: 300px; overflow-y: auto; }
+.transaction {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border-left: 4px solid transparent;
+    }
+.transaction.income { border-left-color: #00ff88; }
+.transaction.expense { border-left-color: #ff4757; }
+.transaction-info { flex: 1; }
+.transaction-title { font-size: 14px; font-weight: bold; margin-bottom: 3px; }
+.transaction-meta { font-size: 11px; opacity: 0.7; }
+.transaction-amount { font-size: 16px; font-weight: bold; margin-right: 10px; }
+.transaction-amount.income { color: #00ff88; }
+.transaction-amount.expense { color: #ff4757; }
+.empty-state { text-align: center; padding: 40px 20px; opacity: 0.6; }
+.empty-icon { font-size: 48px; margin-bottom: 10px; }
+.category-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      font-size: 10px;
+      margin-right: 5px;
+    }
+.footer { text-align: center; margin-top: 20px; font-size: 10px; opacity: 0.7; }
+    @media (max-width: 380px) {
+     .balance-amount { font-size: 28px; }
+     .form-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>EXPENSE TRACKER</h1>
+      <div class="brand">CYRUS TECH FINANCE</div>
+    </div>
+
+    <div class="balance-card">
+      <div class="balance-label">CURRENT BALANCE</div>
+      <div class="balance-amount" id="balance">₵0.00</div>
+      <div class="summary">
+        <div class="summary-item">
+          <div class="summary-label">INCOME</div>
+          <div class="summary-amount income" id="totalIncome">₵0.00</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">EXPENSES</div>
+          <div class="summary-amount expense" id="totalExpense">₵0.00</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-group">
+        <label class="form-label">DESCRIPTION</label>
+        <input type="text" class="form-input" id="description" placeholder="e.g. Food, Salary, Transport">
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">AMOUNT (₵)</label>
+          <input type="number" class="form-input" id="amount" placeholder="0.00" step="0.01" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">CATEGORY</label>
+          <select class="form-select" id="category">
+            <option value="Food">🍕 Food</option>
+            <option value="Transport">🚌 Transport</option>
+            <option value="Bills">💡 Bills</option>
+            <option value="Shopping">🛒 Shopping</option>
+            <option value="Salary">💼 Salary</option>
+            <option value="Other">📦 Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-income" onclick="addTransaction('income')">+ INCOME</button>
+        <button class="btn btn-expense" onclick="addTransaction('expense')">- EXPENSE</button>
+      </div>
+    </div>
+
+    <div class="transactions">
+      <div class="section-title">RECENT TRANSACTIONS</div>
+      <div class="transaction-list" id="transactionList">
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+          <div>No transactions yet. Add your first income or expense!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Built by Cyrus Bortei | 50 GHS Finance App | Data Saved Locally
+    </div>
+  </div>
+
+  <script>
+    let transactions = JSON.parse(localStorage.getItem('cyrusExpenses') || '[]');
+
+    function addTransaction(type) {
+      const description = document.getElementById('description').value.trim();
+      const amount = parseFloat(document.getElementById('amount').value);
+      const category = document.getElementById('category').value;
+
+      // Validation
+      if (!description) {
+        alert('Please enter a description!');
+        return;
+      }
+      if (!amount || amount <= 0) {
+        alert('Please enter a valid amount greater than 0!');
+        return;
+      }
+      if (amount > 999) {
+        alert('Amount too large!');
+        return;
+      }
+
+      // Create transaction
+      const transaction = {
+        id: Date.now(),
+        type: type,
+        description: description,
+        amount: amount,
+        category: category,
+        date: new Date().toISOString()
+      };
+
+      transactions.unshift(transaction);
+      saveTransactions();
+      updateUI();
+      clearForm();
+    }
+
+    function deleteTransaction(id) {
+      if (confirm('Delete this transaction?')) {
+        transactions = transactions.filter(t => t.id!== id);
+        saveTransactions();
+        updateUI();
+      }
+    }
+
+    function saveTransactions() {
+      localStorage.setItem('cyrusExpenses', JSON.stringify(transactions));
+    }
+
+    function clearForm() {
+      document.getElementById('description').value = '';
+      document.getElementById('amount').value = '';
+      document.getElementById('category').value = 'Food';
+    }
+
+    function updateUI() {
+      // Calculate totals
+      const income = transactions
+       .filter(t => t.type === 'income')
+       .reduce((sum, t) => sum + t.amount, 0);
+      
+      const expense = transactions
+       .filter(t => t.type === 'expense')
+       .reduce((sum, t) => sum + t.amount, 0);
+      
+      const balance = income - expense;
+
+      // Update balance display
+      document.getElementById('balance').innerText = formatMoney(balance);
+      document.getElementById('totalIncome').innerText = formatMoney(income);
+      document.getElementById('totalExpense').innerText = formatMoney(expense);
+
+      // Update transaction list
+      const list = document.getElementById('transactionList');
+      
+      if (transactions.length === 0) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📊</div>
+            <div>No transactions yet. Add your first income or expense!</div>
+          </div>`;
+        return;
+      }
+
+      list.innerHTML = transactions.map(t => `
+        <div class="transaction ${t.type}">
+          <div class="transaction-info">
+            <div class="transaction-title">${escapeHtml(t.description)}</div>
+            <div class="transaction-meta">
+              <span class="category-badge">${getCategoryEmoji(t.category)} ${t.category}</span>
+              ${formatDate(t.date)}
+            </div>
+          </div>
+          <div class="transaction-amount ${t.type}">
+            ${t.type === 'income'? '+' : '-'}${formatMoney(t.amount)}
+          </div>
+          <button class="btn-delete" onclick="deleteTransaction(${t.id})">🗑️</button>
+        </div>
+      `).join('');
+    }
+
+    function formatMoney(amount) {
+      return '₵' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) return 'Today';
+      if (diffDays === 1) return 'Yesterday';
+      if (diffDays < 7) return `${diffDays} days ago`;
+      return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    }
+
+    function getCategoryEmoji(category) {
+      const emojis = {
+        Food: '🍕', Transport: '🚌', Bills: '💡', 
+        Shopping: '🛒', Salary: '💼', Other: '📦'
+      };
+      return emojis[category] || '📦';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Load on start
+    updateUI();
+
+    // Enter key support
+    document.getElementById('amount').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') addTransaction('expense');
+    });
+  </script>
+</body>
+</html>
